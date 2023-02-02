@@ -29,6 +29,39 @@ fun get_substitutions1(losl, s) =
                     NONE   => get_substitutions1(xs, s)
                 |   SOME y => y @ get_substitutions1(xs, s)
 
+(*3- get_substitutions2*)
+(*string list list, string -> string list *)
+
+fun get_substitutions2(losl, s) = 
+    let 
+        fun aux(losl, s, acc) = 
+            case losl of 
+                []    => acc
+                |   x::xs => case all_except_option(s, x) of 
+                            NONE   => aux(xs, s, acc @ [])
+                        |   SOME y => aux(xs, s, y @ acc)
+    in 
+        aux(losl, s, [])
+    end
+
+(*4- similar_names*)
+(*string list list, record -> record list*)
+
+
+fun similar_names(losl, {first=f, middle=m, last=l}) = 
+    let 
+        fun helper(los, {first=f, middle=m, last=l}) = 
+            case los of 
+                []    => []
+            |   x::xs => {first=x, middle=m, last=l} :: helper(xs, {first=f, middle=m, last=l})
+    in
+    case losl of [] => []
+    |            _  => {first=f, middle=m, last=l} :: helper(get_substitutions1(losl, f), {first=f, middle=m, last=l})
+    end
+
+similar_names([["Fred","Fredrick"],["Elizabeth","Betty"],["Freddie","Fred","F"]],
+{first="Fred", middle="W", last="Smith"})
+
 
 
 (* you may assume that Num is always used with values 2, 3, ..., 10
