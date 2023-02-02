@@ -8,7 +8,7 @@ fun same_string(s1 : string, s2 : string) =
 
 (* put your solutions for problem 1 here *)
 
-(*all_except_option *)
+(*1- all_except_option *)
 (*string, string list -> NONE or SOME lst*)
 fun all_except_option(s, los) =
     case los of 
@@ -18,6 +18,16 @@ fun all_except_option(s, los) =
                         else case all_except_option(s, xs) of 
                               NONE    => NONE
                             | SOME xs => SOME(x::xs)
+
+(*2- get_substitutions1*)
+(*string list list, string -> string list *)
+
+fun get_substitutions1(losl, s) =   
+    case losl of 
+        []    => []
+    |   x::xs => case all_except_option(s, x) of 
+                    NONE   => get_substitutions1(xs, s)
+                |   SOME y => y @ get_substitutions1(xs, s)
 
 
 
