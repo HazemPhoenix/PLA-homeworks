@@ -78,4 +78,3 @@ fun oldest(lod: (int*int*int) list) =
         if is_older(hd lod, hd (tl lod)) = false
         then oldest(tl lod)
         else oldest(hd lod :: tl (tl lod))
-
