@@ -70,9 +70,8 @@ fun first_answer f xs =
 fun all_answers f xs =
     let fun aux f acc xs =  
             case xs of 
-                [] => acc
+                [] => SOME acc
                 | x::xs' => case f x of 
-                                NONE => NONE
+                                  NONE     => NONE
                                 | SOME lst => aux f (lst @ acc) xs' 
     in aux f [] xs end 
-
