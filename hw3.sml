@@ -26,6 +26,8 @@ fun g f1 f2 p =
 	  | _                 => 0
     end
 
+
+
 (**** for the challenge problem only ****)
 
 datatype typ = Anything
@@ -75,3 +77,42 @@ fun all_answers f xs =
                                   NONE     => NONE
                                 | SOME lst => aux f (lst @ acc) xs' 
     in aux f [] xs end 
+
+fun count_wildcards p = g (fn () => 1) (fn _ => 0) p
+fun count_wild_and_variable_lengths p = g (fn () => 1) (fn x => String.size x) p
+fun count_some_var s p = g (fn () => 0) (fn x => if x = s then 1 else 0) p
+
+fun check_pat p = 
+  let fun get_str_list p = 
+         case p of
+            Variable x => [x] 
+           |TupleP ps  => List.foldl (fn (r,i) => get_str_list(r)@i) [] ps
+           | _ => []
+
+      fun do_same_exists x = List.exists(fn y => x = y ) 
+
+      fun check_uniqueness lst =
+       case lst of
+        [] => true
+        | x::xs =>   if (do_same_exists x xs)
+                     then false
+                     else check_uniqueness xs
+  in check_uniqueness ( get_str_list p) end 
+
+fun match (v,p)   =
+     case (v,p) of  
+      (_,Wildcard) => SOME []
+     |(Const v1,ConstP p1) =>if v1 = p1 then SOME [] else NONE
+     |(Unit,UnitP) =>SOME []
+     |(Constructor (s ,v1),ConstructorP (s1, p1) ) => if s = s1 then match(v1,p1) else NONE
+     |(Tuple vs,TupleP ps) => if List.length vs = List.length ps 
+                              then case all_answers match (ListPair.zip(vs,ps))  of
+                                    SOME v2=>SOME v2
+                                   |_ => NONE
+                              else NONE
+     |(_, Variable s ) => SOME [(s,v)]
+     |(_,_) => NONE
+
+fun first_match v p =
+    SOME (first_answer (fn x => match(v,x)) p)
+    handle NoAnswer =>NONE
